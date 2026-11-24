@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Florida Road Trip 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: practical, sunny road-trip brief for a group of five
+IDEA: a highway road map plus a trip sheet, headings like green highway signs
+PICTURE: hand-drawn interactive Florida map, day-coloured routes that animate, tappable stops
+COLOUR and TYPE: sea teal field, sand land, one colour per day; Barlow Condensed + Barlow
+LAYOUT: teal title band, map with controls, places by region, day timelines, weather, budget, bookings, alternatives */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#08171b);--ink:light-dark(#10232a,#e6f0f1);--mute:light-dark(#4b6066,#9fb5ba);
+--sea:light-dark(#0b6e75,#0d5b61);--water:light-dark(#cdebf0,#0e3440);--water2:light-dark(#b5e0e8,#0b2b35);
+--land:light-dark(#f3ead2,#1c2d29);--coast:light-dark(#c4b285,#3f5d55);--line:light-dark(#dde6e7,#1d353b);
+--card:light-dark(#f3f8f8,#0e2329);--sign:light-dark(#0d6b3f,#17824e)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Barlow,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Barlow Condensed",Barlow,sans-serif;line-height:1.05;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,5.2vw,54px)}h2{font-size:clamp(28px,3.4vw,38px)}h3{font-size:22px}
+a{color:var(--sea)}
+.band{padding:clamp(28px,4vw,56px) max(5vw,16px)}.wrap{max-width:1240px;margin:0 auto}
+.hero{background:var(--sea);color:#fff}.hero p{max-width:68ch;margin:12px 0 0;color:#dff4f4}
+.stats{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:22px}
+.stats div{font-family:"Barlow Condensed";font-size:30px;font-weight:700;white-space:nowrap}.stats span{display:block;font:500 14px Barlow;color:#bfe7e7}
+nav.scroll{display:flex;gap:6px;overflow-x:auto;padding:10px max(5vw,16px);border-bottom:1px solid var(--line);background:var(--bg)}
+nav.scroll a{flex:none;text-decoration:none;color:var(--ink);font-weight:600;padding:10px 12px;border-radius:8px}
+nav.scroll a:hover{background:var(--card)}
+@media(min-width:900px){nav.scroll{position:sticky;top:0;z-index:5}}
+html{scroll-padding-top:72px;scroll-behavior:smooth}
+.sign{display:inline-block;background:var(--sign);color:#fff;border:2px solid #fff;outline:2px solid var(--sign);border-radius:6px;padding:4px 12px 2px;margin-bottom:14px}
+.lead{color:var(--mute);max-width:70ch;margin:8px 0 22px}
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:22px;align-items:start}
+@media(max-width:900px){.mapgrid{grid-template-columns:minmax(0,1fr)}}
+.fig{position:relative;min-height:340px;height:min(78vh,760px);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+@media(max-width:600px){.fig{height:520px}}
+.w{fill:var(--water)}.w2{fill:var(--water2)}.l{fill:var(--land);stroke:var(--coast);stroke-width:1.2}
+.ky{fill:none;stroke:var(--land);stroke-linecap:round;stroke-linejoin:round}
+.rt{fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:.95}
+.hub{font:700 13px Barlow;fill:var(--ink);paint-order:stroke;stroke:var(--land);stroke-width:4px}
+.wl{font:italic 600 13px Barlow;fill:var(--mute);opacity:.85}
+.mk{stroke:#fff;stroke-width:1.6}.mk.o{fill:#8a9ca1;opacity:.85}
+.sel{fill:none;stroke:var(--ink);stroke-width:2.5}
+.sl{font:700 13px Barlow;fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+button,.btn{font:600 15px Barlow;min-height:44px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--sea);outline-offset:2px}
+button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+.ctl label{display:flex;gap:8px;align-items:center;min-height:44px;font-weight:600}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--sea)}
+.info{background:var(--card);border-radius:14px;padding:18px;border:1px solid var(--line)}
+.info .tag{display:inline-block;color:#fff;font:700 13px Barlow;border-radius:6px;padding:2px 8px}
+.info dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:12px 0 0}.info dt{color:var(--mute)}.info dd{margin:0}
+.legend{display:grid;gap:6px;margin-top:16px;font-size:15px}.legend i{display:inline-block;width:22px;height:4px;border-radius:2px;vertical-align:middle;margin-right:8px}
+.region{margin-top:34px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th{text-align:left;font-size:14px;color:var(--mute);font-weight:600;border-bottom:2px solid var(--line);padding:8px 10px}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+td.n{white-space:nowrap}
+.pl{background:none;border:0;padding:0;min-height:0;font:700 16px Barlow;color:var(--ink);text-align:left;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:4px}
+.badge{display:inline-block;font:700 13px Barlow;color:#fff;border-radius:6px;padding:2px 8px;white-space:nowrap}.badge.no{background:transparent;color:var(--mute);border:1px solid var(--line)}
+.days{display:grid;gap:26px;margin-top:10px}
+.day{border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.dh{display:grid;grid-template-columns:auto 1fr;gap:4px 18px;align-items:center;padding:18px 20px;background:var(--card)}
+.dn{font:700 54px/1 "Barlow Condensed";grid-row:span 2}
+.dh p{margin:0;color:var(--mute)}
+.dm{display:flex;flex-wrap:wrap;gap:6px 18px;padding:12px 20px;border-bottom:1px solid var(--line);font-size:15px}.dm b{white-space:nowrap}
+.tl{list-style:none;margin:0;padding:8px 20px 4px}
+.tl li{display:grid;grid-template-columns:92px 1fr;gap:14px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.tl li:last-child{border:0}
+.tl time{font:700 20px "Barlow Condensed";white-space:nowrap}
+.tl strong{display:block}.tl span{color:var(--mute)}
+.df{padding:14px 20px 18px;display:grid;gap:10px}
+.alt{background:var(--card);border-radius:10px;padding:12px 14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.big{font:700 clamp(34px,4vw,44px)/1 "Barlow Condensed"}
+.card p{margin:6px 0 0;color:var(--mute)}
+td.r,th.r{text-align:right;white-space:nowrap}
+.check{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:4px}
+.check label{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--card);min-height:44px}
+.check input{margin-top:3px;flex:none}
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px 28px;padding:0;list-style:none;margin:10px 0 0}
+.tips li{padding:10px 0;border-bottom:1px solid var(--line)}
+.small{font-size:14px;color:var(--mute)}
+footer{border-top:1px solid var(--line)}
+pre,.scroll{overflow-x:auto}.scroll a{flex:none}
+@media(max-width:600px){table{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:6.5em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:6em;margin-inline-start:-6.5em;color:var(--mute);font-size:13px}.stack td:empty{display:none}.tl li{grid-template-columns:70px 1fr}.dn{font-size:42px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{nav,.ctl,.chips{display:none}.fig{height:520px}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<header class="band hero"><div class="wrap">
+<h1>Florida in 4½ days: the Keys, the Everglades, the Gulf, the springs and a taste of Miami</h1>
+<p>Thanksgiving road trip for 5, Thu Nov 26 to Mon Nov 30, 2026. Fly Columbus to Fort Lauderdale on Frontier, loop the southern half of the state in an Enterprise minivan, end with a night on Miami Beach and a Miami morning, then fly home from Fort Lauderdale.</p>
+<div class="stats">
+<div>~1,110 mi<span>total driving</span></div>
+<div>~23 h<span>behind the wheel</span></div>
+<div id="nstop">0<span>stops in the plan</span></div>
+<div>4 nights<span>Key West, Florida City, Tampa, Miami Beach</span></div>
+</div>
+</div></header>
+<nav class="scroll" aria-label="Sections">
+<a href="#map">Map</a><a href="#plan">Day by day</a><a href="#weather">Weather</a><a href="#budget">Budget</a><a href="#book">Book now</a><a href="#alts">Alternatives</a><a href="#tips">Tips</a><a href="#places">All places</a>
+</nav>
+
+<section class="band" id="map"><div class="wrap">
+<h2 class="sign">Route map</h2>
+<p class="lead">Coloured dots are stops in the plan, grey dots are other places worth knowing about (the full list is at the bottom of the page). Tap any dot for details, pick a day to zoom in, or press Play to watch the route draw itself.</p>
+<div class="mapgrid">
+<div>
+<div class="fig"><svg id="m" role="img" aria-label="Map of south and central Florida with the five-day route"></svg></div>
+</div>
+<div>
+<div class="chips" id="chips"></div>
+<div class="ctl">
+<button id="play">▶ Play route</button>
+<label><input type="checkbox" id="all" checked> Show places not in plan</label>
+</div>
+<div class="info" id="info" aria-live="polite"></div>
+<div class="legend" id="legend"></div>
+</div>
+</div>
+</div></section>
+
+<section class="band" id="plan"><div class="wrap">
+<h2 class="sign">Day by day</h2>
+<p class="lead">The loop runs Keys first (Thursday traffic is lighter heading south than the weekend), then the Everglades, up the Gulf coast, to the springs, back across Alligator Alley to Miami Beach, and a Miami morning before the flight. Every day starts early. Days 3 and 4 are the long ones.</p>
+<div class="days" id="days"></div>
+</div></section>
+
+<section class="band" id="weather" style="background:var(--card)"><div class="wrap">
+<h2 class="sign">Weather and daylight</h2>
+<p class="lead">Late November is dry season, warm in the Keys and cooler as you go north. Check the forecast two days out.</p>
+<div class="cards">
+<div class="card"><div class="big">81° / 72°F</div><p>Typical November high and low in Key West. Mostly sunny with about 1 stormy day in the month.</p></div>
+<div class="card"><div class="big">~79°F</div><p>Average Key West sea temperature in November. Warm enough to swim at Fort Zach and Bahia Honda.</p></div>
+<div class="card"><div class="big">~5:35 pm</div><p>Sunset all trip. The Keys hit their earliest sunset of the year on Nov 29 (5:32 pm). Sunrise is around 6:50 am.</p></div>
+<div class="card"><div class="big">Breezy</div><p>November is one of the windier months in Key West (about 12 mph). Mornings around Tampa and Crystal River can feel cool: pack a light jacket.</p></div>
+</div>
+</div></section>
+
+<section class="band" id="budget"><div class="wrap">
+<h2 class="sign">Rough budget for 5</h2>
+<p class="lead">Estimates, not quotes. Hotel prices move fast over Thanksgiving, so book soon. Flights and the car are on your own bookings.</p>
+<table class="stack">
+<thead><tr><th>Item</th><th>How it was estimated</th><th class="r">Group</th><th class="r">Each</th></tr></thead>
+<tbody id="bud"></tbody>
+</table>
+<p class="small">Gas uses the Florida average of $3.62/gal (AAA, mid-November 2026) and about 20 mpg for a minivan. Ticket prices change; check each site before you go.</p>
+</div></section>
+
+<section class="band" id="book" style="background:var(--card)"><div class="wrap">
+<h2 class="sign">Book these now</h2>
+<p class="lead">It is two days out and a holiday weekend. Ticks are saved in this browser.</p>
+<ul class="check" id="chk"></ul>
+</div></section>
+
+<section class="band" id="alts"><div class="wrap">
+<h2 class="sign">Alternatives and swaps</h2>
+<div class="cards" id="altc"></div>
+</div></section>
+
+<section class="band" id="tips" style="background:var(--card)"><div class="wrap">
+<h2 class="sign">Need-to-know</h2>
+<ul class="tips" id="tipl"></ul>
+</div></section>
+
+<section class="band" id="places"><div class="wrap">
+<h2 class="sign">Every place worth seeing</h2>
+<p class="lead">The full list for south and central Florida, grouped by region, so you know what exists before looking at the plan. Places marked <span class="badge" style="background:var(--sea)">Added</span> were missing from the first version. Tap a name to find it on the map.</p>
+<div id="regions"></div>
+</div></section>
+
+<footer class="band"><div class="wrap small">
+<p>Sources: <a href="https://www.nps.gov/ever/planyourvisit/Shark-Valley-Tamiami.htm">NPS Shark Valley</a>, <a href="https://www.sharkvalleytramtours.com/">Shark Valley Tram Tours</a>, <a href="https://home.nps.gov/ever/planyourvisit/fees.htm">Everglades fees</a>, <a href="https://www.fws.gov/refuge/crystal-river/visit-us">Crystal River NWR</a>, <a href="https://www.floridastateparks.org/WeekiWachee">Weeki Wachee SP</a>, <a href="https://www.enterprise.com/content/dam/e-links/TollPass-fy26.pdf">Enterprise TollPass</a>, <a href="https://www.fox13news.com/news/florida-gas-prices-drop-8-month-low">AAA gas prices via FOX 13</a>, <a href="https://thewynwoodwalls.com/">Wynwood Walls</a>, <a href="https://www.miamiandbeaches.com/l/restaurants/versailles-restaurant/2472">Versailles (Miami tourism board)</a>, <a href="https://vizcaya.org/">Vizcaya</a>, <a href="https://currentresults.com/Weather/Florida/Places/key-west-weather-in-november.php">Key West November climate</a>, <a href="https://engine.com/data/holiday-hotel-prices/key-west-fl">Key West holiday hotel prices</a>. Map is a simplified drawing, not for navigation: use the Google Maps links in each day.</p>
+</div></footer>
+
+<script>
+{
+const DC=['#8a9ca1','#ff5a36','#d99a00','#1f9d55','#2f6fde','#d6337a'];
+const DN=['','Thu Nov 26','Fri Nov 27','Sat Nov 28','Sun Nov 29','Mon Nov 30'];
+const REG={keys:'Florida Keys',glades:'Everglades and Homestead',gulf:'Southwest Gulf coast',tampa:'Tampa Bay',springs:'Nature Coast springs',central:'Central Florida (off this route)',miami:'Miami (one evening + one morning)',atlantic:'Fort Lauderdale and the Atlantic coast'};
+// id, name, region, lat, lon, day (0 = not in plan), time needed, cost, why
+const P=[
+['pennekamp','John Pennekamp Coral Reef SP','keys',25.125,-80.406,0,'2 to 4 h','Park entry + boat','First undersea park in the US. Glass-bottom boat or snorkel trip to the reef.'],
+['annes',"Anne's Beach, Islamorada",'keys',24.851,-80.736,1,'15 min','Free','Shallow turquoise flats with a boardwalk. Optional leg-stretch on Day 1.'],
+['robbies',"Robbie's of Islamorada",'keys',24.882,-80.692,0,'30 min','Small fee','Hand-feed giant tarpon off the dock.'],
+['seven','Old Seven Mile Bridge, Marathon','keys',24.705,-81.106,1,'45 min','Free','Walk onto the restored old bridge and watch sunset beside the new one.'],
+['turtle','Turtle Hospital, Marathon','keys',24.7135,-81.0745,0,'90 min','Paid tour','Sea turtle rescue with guided tours. Book ahead.'],
+['bahia','Bahia Honda State Park','keys',24.656,-81.277,2,'45 min','Park entry','One of the best beaches in the Keys, with the broken old railroad bridge.'],
+['bigpine','Big Pine Key','keys',24.669,-81.354,0,'30 min','Free','Tiny Key deer and the No Name Pub.'],
+['duval','Duval Street','keys',24.556,-81.802,1,'1 to 2 h','Free','Main street of Key West: bars, live music, galleries. Your Thanksgiving night walk.'],
+['southernmost','Southernmost Point buoy','keys',24.5465,-81.7975,2,'15 min','Free','The famous striped buoy. Go at sunrise to skip the line.'],
+['mile0','Mile Marker 0','keys',24.5577,-81.804,2,'10 min','Free','Where US-1 begins. Classic road-trip photo.'],
+['hemingway','Hemingway Home and Museum','keys',24.5512,-81.8006,2,'45 to 60 min','Paid, tour included','His 1930s house, still home to dozens of six-toed cats.'],
+['lighthouse','Key West Lighthouse','keys',24.5506,-81.8016,2,'15 to 40 min','Paid to climb','Across the street from Hemingway. Climb for island views or just photograph it.'],
+['zach','Fort Zachary Taylor SP','keys',24.5466,-81.8105,2,'1 h','Park entry','Best swimming and snorkeling beach in Key West, plus a Civil War fort.'],
+['mallory','Mallory Square','keys',24.5597,-81.807,2,'20 min','Free','Harbor plaza famous for its sunset party. You see it in the morning; both sunsets fall on the drives.'],
+['truman','Truman Little White House','keys',24.5583,-81.8053,0,'1 h','Paid tour','President Truman\'s winter retreat.'],
+['sombrero','Sombrero Beach, Marathon','keys',24.6925,-81.0835,0,'30 min','Free','Calm palm-lined family beach just off US-1.',1],
+['curry','Curry Hammock State Park','keys',24.743,-80.982,0,'45 min','Park entry','Quiet beach and mangrove kayak trails between Islamorada and Marathon.',1],
+['indian','Indian Key and Lignumvitae Key','keys',24.88,-80.68,0,'Half day','Kayak rental','Ruins of a 1830s town and an old hardwood island, reached by kayak.',1],
+['butterfly','Key West Butterfly and Nature Conservatory','keys',24.5492,-81.7968,0,'45 min','Paid','Glass dome full of butterflies and flamingos, steps from the Southernmost Point.',1],
+['tortugas','Dry Tortugas National Park','keys',24.628,-82.873,0,'Full day','Ferry or seaplane','Remote island fort about 70 miles west of Key West. Needs a full day, so it does not fit.'],
+['robert','Robert Is Here fruit stand','glades',25.4475,-80.5115,2,'30 min','Pay as you go','Famous key lime and tropical fruit milkshakes.'],
+['anhinga','Anhinga Trail (Royal Palm)','glades',25.382,-80.609,2,'1 h','$35 per car pass','Best short walk in the park. Alligators, anhingas and herons, often very close.'],
+['pahayokee','Pa-hay-okee Overlook','glades',25.4405,-80.783,0,'30 min + drive','Park pass','Raised platform over the river of grass. Add it if you reach the park before 4 pm.'],
+['flamingo','Flamingo','glades',25.1416,-80.924,0,'Half day','Park pass','End of the park road on Florida Bay: crocodiles, boat tours. About an hour each way.'],
+['coral','Coral Castle','glades',25.5005,-80.4445,0,'1 h','Paid','Odd limestone sculpture garden built by one man.'],
+['shark','Shark Valley','glades',25.7618,-80.7663,3,'2.5 h','Pass + $34 tram','2-hour tram on a 15-mile loop to an observation tower. Gators everywhere.'],
+['airboat','Airboat ride (Coopertown area)','glades',25.762,-80.603,3,'45 min','Paid ride','Fast ride across the sawgrass. Optional swap for the Shark Valley tram.'],
+['butcher','Clyde Butcher Big Cypress Gallery','glades',25.8594,-81.019,3,'20 min','Free','Huge black-and-white swamp photographs by Florida\'s best-known landscape photographer.'],
+['oasis','Big Cypress Oasis Visitor Center','glades',25.8566,-81.0337,3,'20 min','Free','Boardwalk over a canal that is usually full of alligators.'],
+['loop','Loop Road scenic drive','glades',25.76,-80.93,0,'1.5 h','Free','Gravel road through deep cypress swamp. Rough for a loaded minivan.'],
+['ochopee','Ochopee Post Office','glades',25.9014,-81.306,3,'5 min','Free','The smallest post office in the US. Quick photo.'],
+['evcity','Everglades City','glades',25.857,-81.386,3,'45 min','Lunch','Old fishing town. Seafood lunch and Ten Thousand Islands boat tours.'],
+['bend','Big Cypress Bend Boardwalk (Fakahatchee)','glades',25.946,-81.418,3,'20 min','Free','Short boardwalk into ancient cypress and wild orchids, right on US-41. Optional stop if you are on time.',1],
+['miccosukee','Miccosukee Indian Village','glades',25.761,-80.825,0,'1 h','Paid','Miccosukee culture, crafts and gator shows next to Shark Valley.',1],
+['mahogany','Mahogany Hammock and Nine Mile Pond','glades',25.32,-80.83,0,'1 h + drive','Park pass','Quieter Everglades walks on the road to Flamingo.',1],
+['naples','Naples Pier and 5th Ave South','gulf',26.1317,-81.8066,3,'45 min','Paid parking','Long wooden pier on white sand, with pelicans and often dolphins.'],
+['marco','Marco Island','gulf',25.94,-81.72,0,'2 h','Beach parking','Resort island with wide, quiet beaches.'],
+['sanibel','Sanibel and Captiva','gulf',26.443,-82.111,0,'Half day','Causeway toll','The best shelling beaches in the US.'],
+['edison','Edison and Ford Winter Estates','gulf',26.6345,-81.879,0,'2 h','Paid','Winter homes and labs of Thomas Edison and Henry Ford.'],
+['venice','Venice Beach','gulf',27.0997,-82.4585,0,'1 h','Free','Known for fossil shark teeth in the sand.'],
+['siesta','Siesta Key Beach','gulf',27.2658,-82.553,0,'1 to 2 h','Free lot, fills early','Powder-white quartz sand, often ranked the best beach in the US.'],
+['ringling','Ringling Museum and St. Armands','gulf',27.3814,-82.5604,0,'2 h','Paid','Circus museum, art palace and a shopping circle. Good rain plan.'],
+['bean','Bean Point, Anna Maria Island','gulf',27.5367,-82.7449,3,'45 min','Free, tight parking','Quiet tip of the island with a Gulf sunset. Strong current, not for swimming.'],
+['coquina','Coquina Beach','gulf',27.451,-82.695,0,'30 min','Big free lot','Backup sunset spot on Anna Maria with easy parking.'],
+['corkscrew','Corkscrew Swamp Sanctuary','gulf',26.3757,-81.6036,0,'2 h','Paid','2.25-mile boardwalk through old-growth bald cypress. One of the best nature walks in Florida.',1],
+['naplesbg','Naples Botanical Garden','gulf',26.106,-81.779,0,'2 h','Paid','Large tropical garden with Caribbean and Asian sections.',1],
+['fmb','Fort Myers Beach','gulf',26.452,-81.95,0,'1 h','Paid parking','Long, lively beach town south of Fort Myers.',1],
+['myakka','Myakka River State Park','gulf',27.24,-82.315,0,'2 h','Park entry','Huge wild park near Sarasota with a canopy walkway and many alligators.',1],
+['lido','Lido Key and Longboat Key','gulf',27.312,-82.577,0,'1 h','Free','Quieter Sarasota beaches next to St. Armands Circle.',1],
+['skyway','Sunshine Skyway Bridge','tampa',27.62,-82.655,3,'Drive over','Small toll','Giant yellow cable bridge across the mouth of Tampa Bay, lit at night.'],
+['desoto','Fort De Soto Park','tampa',27.62,-82.736,0,'2 h','Parking fee','Award-winning beach and an old fort.'],
+['stpete','St. Pete Pier and Dalí Museum','tampa',27.7663,-82.626,0,'2 h','Paid museum','Waterfront pier and a huge Dalí collection.'],
+['riverwalk','Tampa Riverwalk','tampa',27.9465,-82.459,3,'1 h','Free','Lit waterfront path past the silver minarets of the old Tampa Bay Hotel.'],
+['ybor','Ybor City','tampa',27.96,-82.437,0,'1 h','Free','Historic Cuban cigar district with roaming chickens.'],
+['aquarium','Florida Aquarium','tampa',27.944,-82.445,0,'2 h','Paid','Coral reef tanks and sea turtles in downtown Tampa. Good rain plan.',1],
+['busch','Busch Gardens','tampa',28.037,-82.4194,0,'Full day','Paid','Roller coasters and animals. Too long for this trip.'],
+['clearwater','Clearwater Beach and Pier 60','tampa',27.9775,-82.829,4,'1 h','Paid parking','Wide soft-sand beach, one of the best known on the Gulf.'],
+['caladesi','Honeymoon and Caladesi Islands','tampa',28.07,-82.831,0,'Half day','Park + ferry','Wild island beaches north of Clearwater.'],
+['tarpon','Tarpon Springs sponge docks','tampa',28.155,-82.76,0,'1 h','Free','Greek sponge-diving town with great Greek food.'],
+['three','Three Sisters Springs','springs',28.8887,-82.5892,4,'1.5 h','Paid, trolley included','Boardwalk over glass-clear springs. In manatee season (Nov 15 to Mar 31) they crowd in on cold days.'],
+['swim','Manatee swim or clear kayak tour','springs',28.893,-82.605,0,'3 h','Paid tour','One of the few places you can legally swim near manatees. Early morning tours.'],
+['homosassa','Homosassa Springs Wildlife SP','springs',28.8,-82.588,0,'2 h','Paid','Underwater observatory where manatees swim past.'],
+['weeki','Weeki Wachee Springs','springs',28.517,-82.573,4,'1.5 to 2 h','About $13 adult','Live mermaid show in an underwater theater since 1947, plus a river boat cruise.'],
+['rainbow','Rainbow Springs SP','springs',29.102,-82.437,0,'1.5 h','Park entry','Clear headspring with small waterfalls and gardens.'],
+['blue','Blue Spring SP, Orange City','central',28.947,-81.34,0,'2 h','Park entry','Manatee refuge with a boardwalk. Alternative on the drive home via the Turnpike.'],
+['wekiwa','Wekiwa Springs and Kelly Park','central',28.712,-81.46,0,'2 h','Park entry','Swimmable springs near Orlando.'],
+['silver','Silver Springs SP','central',29.215,-82.05,0,'2 h','Park + boat','Famous glass-bottom boat rides.'],
+['ksc','Kennedy Space Center','central',28.573,-80.649,0,'Full day','Paid','Rockets and launch pads. Too far east for this loop.'],
+['merritt','Canaveral National Seashore and Merritt Island','central',28.65,-80.68,0,'Half day','Park entry','Wild Atlantic beach and a bird refuge next to the Space Center.',1],
+['bok','Bok Tower Gardens','central',27.937,-81.576,0,'1.5 h','Paid','Carillon tower on one of the highest hills in peninsular Florida.',1],
+['ocala','Juniper and Alexander Springs (Ocala NF)','central',29.12,-81.66,0,'Half day','Small fee','Swimmable springs in a big forest. Too far north for this trip.',1],
+['orlando','Orlando theme parks','central',28.38,-81.55,0,'Full day each','Paid','Skip on this trip.'],
+['southpointe','South Pointe Park','miami',25.7685,-80.1345,5,'30 min','Free','Pier and lawn at the tip of Miami Beach. Atlantic sunrise and cruise ships heading out.',1],
+['deco','Ocean Drive and the Art Deco District','miami',25.7826,-80.1315,4,'1 h','Free','Pastel 1930s hotels lit with neon at night. Walk it Sunday night and again Monday morning.',1],
+['lummus','Lummus Park Beach (South Beach)','miami',25.779,-80.1295,5,'30 min','Free','The famous wide beach with the colorful lifeguard towers.',1],
+['versailles','Versailles, Little Havana','miami',25.7654,-80.253,5,'45 min','About $15 to $20 each','Miami\'s best-known Cuban restaurant, open from 8 am on weekdays. Cafecito from the walk-up window.',1],
+['calleocho','Calle Ocho and Domino Park','miami',25.7656,-80.2195,5,'40 min','Free','Little Havana\'s main street: domino players, cigar rollers, murals, fruit stands.',1],
+['wynwood','Wynwood street murals','miami',25.801,-80.1994,5,'40 min','Free outside','Blocks of giant murals around the Wynwood Walls. The Walls museum itself opens at 10:30 am.',1],
+['vizcaya','Vizcaya Museum and Gardens','miami',25.7443,-80.2105,0,'1.5 h','$24 to $39','1916 Italian-style villa and gardens on Biscayne Bay. Opens 9:30, closed Tuesdays. Swap in for Wynwood if you prefer.',1],
+['keybiscayne','Key Biscayne and Cape Florida Lighthouse','miami',25.6665,-80.1575,0,'2 h','Park entry','Island beach with the oldest standing structure in Miami-Dade and skyline views.',1],
+['bayfront','Bayside and Bayfront Park','miami',25.778,-80.186,0,'45 min','Free','Downtown waterfront with skyline and harbor views.',1],
+['coralgables','Coral Gables and Venetian Pool','miami',25.7465,-80.2735,0,'1 h','Paid pool','Mediterranean-style city with a pool carved from a coral quarry.',1],
+['fairchild','Fairchild Tropical Botanic Garden','miami',25.677,-80.273,0,'2 h','Paid','World-class palm and tropical plant garden.',1],
+['biscaynenp','Biscayne National Park','miami',25.464,-80.335,0,'Half day','Boat tours','A national park that is 95% water: reefs, mangroves and islands by boat.',1],
+['ftlbeach','Fort Lauderdale Beach and A1A','atlantic',26.1225,-80.1037,0,'1 h','Free','Atlantic sunrise and a palm-lined promenade. Swapped out for Miami Beach in this version.'],
+['lasolas','Las Olas Boulevard','atlantic',26.119,-80.137,0,'1 h','Free','Shops, cafes and canals. Swapped out for Miami in this version.'],
+['bonnet','Bonnet House','atlantic',26.137,-80.112,0,'1.5 h','Paid','Historic estate between the beach and the Intracoastal.'],
+['hollywood','Hollywood Beach Broadwalk','atlantic',26.011,-80.118,0,'1 h','Free','Beach promenade 10 minutes from the airport.'],
+['morikami','Morikami Japanese Gardens, Delray','atlantic',26.43,-80.155,0,'1.5 h','Paid','Calm Japanese gardens and museum 40 minutes north of the airport.',1],
+['palmbeach','Palm Beach and Worth Avenue','atlantic',26.705,-80.038,0,'1.5 h','Free','Mansions, ocean drive and luxury shopping street.',1],
+['jupiter','Jupiter Inlet Lighthouse','atlantic',26.948,-80.082,0,'1 h','Paid climb','Red 1860 lighthouse with sweeping inlet views.',1]
+];
+const R={
+1:[[26.072,-80.15],[25.95,-80.33],[25.75,-80.40],[25.55,-80.42],[25.448,-80.479],[25.29,-80.39],[25.1,-80.44],[24.92,-80.63],[24.851,-80.736],[24.78,-80.9],[24.72,-81.04],[24.705,-81.106],[24.67,-81.22],[24.656,-81.277],[24.669,-81.354],[24.64,-81.55],[24.585,-81.7],[24.556,-81.802]],
+2:[[24.5465,-81.7975],[24.5577,-81.804],[24.5512,-81.8006],[24.5466,-81.8105],[24.5597,-81.807],[24.585,-81.7],[24.64,-81.55],[24.669,-81.354],[24.656,-81.277],[24.67,-81.22],[24.705,-81.106],[24.72,-81.04],[24.78,-80.9],[24.851,-80.736],[24.92,-80.63],[25.1,-80.44],[25.29,-80.39],[25.448,-80.479],[25.4475,-80.5115],[25.395,-80.583],[25.382,-80.609],[25.395,-80.583],[25.448,-80.479]],
+3:[[25.448,-80.479],[25.6,-80.49],[25.761,-80.483],[25.762,-80.603],[25.7618,-80.7663],[25.79,-80.9],[25.8594,-81.019],[25.8566,-81.0337],[25.9014,-81.306],[25.91,-81.36],[25.857,-81.386],[25.91,-81.36],[25.96,-81.6],[26.05,-81.75],[26.1317,-81.8066],[26.2,-81.74],[26.62,-81.82],[27.0,-82.2],[27.33,-82.45],[27.48,-82.6],[27.5367,-82.7449],[27.5,-82.69],[27.62,-82.655],[27.77,-82.66],[27.9,-82.58],[27.9465,-82.459]],
+4:[[27.9465,-82.459],[28.06,-82.56],[28.5,-82.53],[28.75,-82.55],[28.8887,-82.5892],[28.7,-82.58],[28.517,-82.573],[28.2,-82.69],[27.9775,-82.829],[27.96,-82.7],[27.95,-82.47],[27.6,-82.4],[27.33,-82.45],[26.62,-81.82],[26.17,-81.72],[26.15,-81.3],[26.14,-80.85],[26.13,-80.42],[25.95,-80.33],[25.82,-80.31],[25.79,-80.25],[25.785,-80.19],[25.79,-80.16],[25.7826,-80.1315]],
+5:[[25.7685,-80.1345],[25.779,-80.1295],[25.7826,-80.1315],[25.79,-80.16],[25.785,-80.19],[25.77,-80.205],[25.7654,-80.253],[25.7656,-80.2195],[25.785,-80.205],[25.801,-80.1994],[25.85,-80.2],[25.95,-80.18],[26.04,-80.165],[26.072,-80.15]]
+};
+const LAND=[[29.7,-81.25],[29.25,-81.03],[28.95,-80.85],[28.75,-80.7],[28.6,-80.58],[28.45,-80.53],[28.2,-80.6],[27.9,-80.48],[27.6,-80.36],[27.2,-80.17],[26.9,-80.06],[26.6,-80.03],[26.3,-80.07],[26.1,-80.095],[25.9,-80.12],[25.77,-80.13],[25.62,-80.29],[25.45,-80.33],[25.3,-80.4],[25.2,-80.5],[25.15,-80.75],[25.13,-80.93],[25.14,-81.1],[25.3,-81.15],[25.5,-81.22],[25.7,-81.3],[25.85,-81.42],[25.95,-81.72],[26.13,-81.815],[26.3,-81.84],[26.45,-81.95],[26.52,-82.06],[26.7,-82.2],[26.95,-82.36],[27.1,-82.47],[27.3,-82.58],[27.54,-82.76],[27.7,-82.77],[27.85,-82.85],[28.0,-82.845],[28.15,-82.8],[28.4,-82.71],[28.55,-82.68],[28.75,-82.7],[28.9,-82.72],[29.05,-82.8],[29.15,-83.0],[29.3,-83.15],[29.7,-83.5]];
+const BAY=[[27.6,-82.75],[27.62,-82.62],[27.7,-82.55],[27.8,-82.48],[27.9,-82.47],[27.97,-82.5],[27.96,-82.58],[27.86,-82.64],[27.76,-82.62],[27.7,-82.7],[27.62,-82.765]];
+const KW=[[24.5455,-81.812],[24.5605,-81.812],[24.572,-81.8],[24.575,-81.78],[24.57,-81.75],[24.565,-81.73],[24.553,-81.73],[24.546,-81.76],[24.5445,-81.79]];
+const BISC=[[25.9,-80.16],[25.86,-80.17],[25.8,-80.185],[25.76,-80.19],[25.7,-80.22],[25.62,-80.27],[25.52,-80.32],[25.44,-80.335],[25.4,-80.3],[25.45,-80.2],[25.6,-80.15],[25.7,-80.148],[25.76,-80.142],[25.86,-80.145]];
+const ISL=[[[25.9,-80.14],[25.9,-80.118],[25.8,-80.124],[25.766,-80.129],[25.766,-80.141],[25.8,-80.143]],[[25.702,-80.163],[25.702,-80.15],[25.665,-80.152],[25.665,-80.166]]];
+const KEYS=[[25.29,-80.3],[25.12,-80.43],[24.95,-80.6],[24.85,-80.75],[24.78,-80.9],[24.72,-81.05],[24.7,-81.15],[24.66,-81.27],[24.67,-81.36],[24.64,-81.55],[24.585,-81.7],[24.56,-81.75]];
+const HUBS=[['Fort Lauderdale',26.13,-80.06,'start'],['Miami',25.77,-80.08,'start'],['Florida City',25.47,-80.42,'start'],['Marathon',24.77,-81.07,'middle'],['Key West',24.585,-81.80,'middle'],['Naples',26.15,-81.88,'end'],['Anna Maria',27.53,-82.82,'end'],['Tampa',28.0,-82.42,'start'],['Crystal River',28.9,-82.66,'end'],['Orlando',28.54,-81.38,'middle'],['Everglades City',25.95,-81.42,'end']];
+const WL=[['Gulf of Mexico',26.5,-82.7],['Atlantic Ocean',27.3,-80.0],['Lake Okeechobee',26.6,-80.83],['The Everglades',25.62,-80.95]];
+const FULL=[24.4,29.3,-83.15,-79.9];
+const VIEWS={kw:[24.538,24.567,-81.82,-81.79],mia:[25.66,25.83,-80.29,-80.11]};
+const C=Math.cos(26.5*Math.PI/180);
+const svg=document.getElementById('m');
+let st={day:0,all:true,sel:null,view:null,anim:false};
+const byId=id=>P.find(p=>p[0]===id);
+function bounds(){
+if(st.view)return st.view;
+if(!st.day)return FULL;
+const pts=R[st.day].slice();P.filter(p=>p[5]===st.day).forEach(p=>pts.push([p[3],p[4]]));
+const la=pts.map(p=>p[0]),lo=pts.map(p=>p[1]);
+let a=Math.min(...la),b=Math.max(...la),c=Math.min(...lo),d=Math.max(...lo);
+const pa=Math.max((b-a)*.14,.06),po=Math.max((d-c)*.14,.06);
+return[a-pa,b+pa,c-po,d+po];
+}
+function draw(){
+const W=svg.clientWidth,H=svg.clientHeight;if(!W||!H)return;
+const[a,b,c,d]=bounds();
+const k=Math.min(W/((d-c)*C),H/(b-a));
+const ox=(W-(d-c)*C*k)/2,oy=(H-(b-a)*k)/2;
+const pr=(la,lo)=>[ox+(lo-c)*C*k,oy+(b-la)*k];
+const pth=(arr,z)=>arr.map((p,i)=>(i?'L':'M')+pr(p[0],p[1]).map(v=>v.toFixed(1)).join(' ')).join('')+(z?'Z':'');
+const zoom=k/((W/((FULL[3]-FULL[2])*C)));
+let s=`<rect width="${W}" height="${H}" class="w"/><path d="${pth(LAND,1)}" class="l"/><path d="${pth(KW,1)}" class="l"/>`;
+const[lx,ly]=pr(26.95,-80.83);s+=`<ellipse cx="${lx}" cy="${ly}" rx="${(.27*C*k).toFixed(1)}" ry="${(.24*k).toFixed(1)}" class="w2"/>`;
+s+=`<path d="${pth(BAY,1)}" class="w2"/><path d="${pth(BISC,1)}" class="w"/>`+ISL.map(i=>`<path d="${pth(i,1)}" class="l"/>`).join('');
+s+=`<path d="${pth(KEYS)}" class="ky" style="stroke-width:${Math.min(Math.max(4,k*.03),16).toFixed(1)}px"/>`;
+if(zoom<3)WL.forEach(w=>{const[x,y]=pr(w[1],w[2]);s+=`<text x="${x}" y="${y}" class="wl" text-anchor="middle">${w[0]}</text>`});
+const ds=st.day?[st.day]:[1,2,3,4,5];
+ds.forEach(n=>{s+=`<path d="${pth(R[n])}" class="rt" data-d="${n}" style="stroke:${DC[n]}"/>`});
+if(zoom<4)HUBS.forEach(h=>{const[x,y]=pr(h[1],h[2]);if(x>4&&x<W-4&&y>10&&y<H-4)s+=`<text x="${x}" y="${y}" class="hub" text-anchor="${h[3]}">${h[0]}</text>`});
+const vis=P.filter(p=>st.all||(st.day?p[5]===st.day:p[5]>0));
+const on=p=>st.day?p[5]===st.day:p[5]>0;
+const r=zoom>6?8:6;
+vis.filter(p=>!on(p)).forEach(p=>{const[x,y]=pr(p[3],p[4]);s+=`<circle cx="${x}" cy="${y}" r="${r-1.5}" class="mk o" data-id="${p[0]}"><title>${p[1]}</title></circle>`});
+vis.filter(on).forEach(p=>{const[x,y]=pr(p[3],p[4]);s+=`<circle cx="${x}" cy="${y}" r="${r}" class="mk" style="fill:${DC[p[5]]}" data-id="${p[0]}"><title>${p[1]}</title></circle>`});
+if(st.sel){const p=byId(st.sel);const[x,y]=pr(p[3],p[4]);if(x>-20&&x<W+20&&y>-20&&y<H+20){const left=x>W*.6;s+=`<circle cx="${x}" cy="${y}" r="${r+5}" class="sel"/><text x="${left?x-r-9:x+r+9}" y="${y+4}" class="sl" text-anchor="${left?'end':'start'}">${p[1]}</text>`}}
+svg.innerHTML=s;
+if(st.anim){st.anim=false;animate()}
+}
+function animate(){
+const paths=[...svg.querySelectorAll('.rt')];const dur=st.day?3.2:2.2;
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+paths.forEach((p,i)=>{const L=p.getTotalLength();p.style.transition='none';p.style.strokeDasharray=L;p.style.strokeDashoffset=L;p.getBoundingClientRect();p.style.transition=`stroke-dashoffset ${dur}s linear ${i*dur}s`;p.style.strokeDashoffset=0});
+}
+function info(){
+const el=document.getElementById('info');
+if(!st.sel){el.innerHTML=st.day?dayInfo(st.day):`<h3>How to use the map</h3><p class="small" style="margin:8px 0 0">Tap a dot for what it is, how long it takes and what it costs. Pick a day above to zoom to that day's route. "Key West close-up" and "Miami close-up" spread out those clusters of sights.</p>`;return}
+const p=byId(st.sel);
+const tag=p[5]?`<span class="tag" style="background:${DC[p[5]]}">Day ${p[5]} · ${DN[p[5]]}</span>`:`<span class="tag" style="background:${DC[0]}">Not in plan</span>`;
+el.innerHTML=`${tag}${p[9]?' <span class="tag" style="background:var(--sea)">Added</span>':''}<h3 style="margin-top:10px">${p[1]}</h3><p style="margin:6px 0 0">${p[8]}</p><dl><dt>Region</dt><dd>${REG[p[2]]}</dd><dt>Time</dt><dd>${p[6]}</dd><dt>Cost</dt><dd>${p[7]}</dd></dl><p style="margin:12px 0 0"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p[1]+', Florida')}">Open in Google Maps</a></p>`;
+}
+const DAYS=[
+{t:'Overseas Highway to Key West',s:'Thanksgiving Day. Land, grab the van, drive the Keys and catch sunset on the Seven Mile Bridge.',mi:'~170 mi',dr:'~4 h 15 m',sl:'Key West',
+it:[['1:01 pm','Land at Fort Lauderdale (FLL)','Bags, then the airport shuttle to the Rental Car Center. Enterprise is on Level 2. Take a minivan, opt into TollPass, add every driver.'],
+['2:15 pm','Leave the airport','Florida\'s Turnpike south to Florida City, then US-1 into the Keys. Fill the tank in Florida City; gas in the Keys costs more.'],
+['3:40 pm','Key Largo','Start of the Keys. Keep rolling.'],
+['4:25 pm',"Anne's Beach (optional)",'15 minutes on the turquoise flats if you are ahead of schedule.'],
+['5:05 pm','Old Seven Mile Bridge, Marathon','Park at the trailhead and walk out on the old bridge. Sunset is about 5:35 pm.'],
+['5:45 pm','Seven Mile Bridge at dusk','Then 50 more miles of small islands.'],
+['7:00 pm','Key West','Check in, Thanksgiving dinner (reserve a table now), then walk Duval Street.']],
+alt:'If US-1 is jammed, watch sunset from Islamorada instead and cross the bridge after dark. You will drive it again in daylight on Day 2.',
+gm:['Fort Lauderdale-Hollywood International Airport','Old Seven Mile Bridge, Marathon, FL','Duval Street, Key West, FL']},
+{t:'Key West morning, Everglades evening',s:'See Key West before the crowds, drive the Keys in daylight, and finish with gators at sunset.',mi:'~180 mi',dr:'~4 h 15 m',sl:'Florida City or Homestead',
+it:[['6:30 am','Southernmost Point','Before the line forms. Sunrise is about 6:50 am; Higgs Beach next door is a good spot.'],
+['7:15 am','Mile Marker 0, then breakfast','Cuban coffee and buttered Cuban toast at a local cafe.'],
+['8:15 am','Old Town walk','Duval Street in daylight and the Key West Lighthouse.'],
+['9:00 am','Hemingway Home','Opens at 9. Guided tours run all the time; about 45 minutes.'],
+['10:00 am','Fort Zachary Taylor State Park','Swim or snorkel at the island\'s best beach.'],
+['11:15 am','Key lime pie and Mallory Square','Pie for the road, a look at the harbor. Leave by 11:45.'],
+['12:45 pm','Bahia Honda State Park','Beach and the old railroad bridge. 45 minutes.'],
+['1:45 pm','Seven Mile Bridge in daylight','The view you missed last night.'],
+['3:45 pm','Robert Is Here, Homestead','Key lime or mamey milkshakes for everyone.'],
+['4:15 pm','Everglades: Anhinga Trail','Buy the $35 vehicle pass at the Homestead entrance; it is valid 7 days and covers Shark Valley tomorrow. Stay until sunset.'],
+['6:15 pm','Florida City','Simple chain hotels by the Turnpike. Early night.']],
+alt:'Running late out of Key West? Skip Bahia Honda and go straight to the Anhinga Trail. Want more beach? Stay longer at Bahia Honda and drop Robert Is Here.',
+gm:['Southernmost Point, Key West, FL','Bahia Honda State Park, FL','Robert Is Here, Homestead, FL','Royal Palm Visitor Center, Everglades National Park','Florida City, FL']},
+{t:'Tamiami Trail to the Gulf',s:'Cross the Everglades on US-41, hit Naples, catch sunset at Bean Point, and sleep in Tampa.',mi:'~290 mi',dr:'~6 h',sl:'Tampa',
+it:[['7:30 am','Leave Florida City','Krome Ave north, then west on US-41 (Tamiami Trail). About 45 minutes.'],
+['8:40 am','Shark Valley gate','Opens at 9:00 this time of year and parking fills fast on busy days. Yesterday\'s pass covers entry.'],
+['9:30 am','Shark Valley tram tour','2 hours on the 15-mile loop with a stop at the observation tower. Book online. Swap: an airboat ride 10 minutes east if the group prefers speed.'],
+['11:45 am','Clyde Butcher Gallery and Oasis Visitor Center','Two stops close together in Big Cypress. Gators in the canal by the boardwalk.'],
+['12:30 pm','Ochopee Post Office','Smallest post office in the US. Photo stop.'],
+['12:45 pm','Lunch in Everglades City','Seafood on the water. Keep it to 45 minutes.'],
+['1:40 pm','Big Cypress Bend Boardwalk (optional)','15 minutes into old cypress on US-41. Only if you left lunch on time.'],
+['2:25 pm','Naples Pier','Walk the pier and watch the pelicans.'],
+['3:10 pm','I-75 north','About 2 hours to Anna Maria Island. Top up gas on the way.'],
+['5:15 pm','Bean Point sunset','Sunset about 5:40 pm. Parking is tight and ticketed: use legal spots near the City Pier or the free island trolley.'],
+['6:15 pm','Dinner on Pine Avenue, Anna Maria',''],
+['7:30 pm','Sunshine Skyway Bridge to Tampa','The lit bridge at night, then a short walk on the Tampa Riverwalk.']],
+alt:'If you reach Naples after 3 pm, skip the pier and watch sunset at Coquina Beach (south end of Anna Maria, big free lot) instead of Bean Point.',
+gm:['Florida City, FL','Shark Valley Visitor Center, FL','Big Cypress Oasis Visitor Center, FL','Everglades City, FL','Naples Pier, Naples, FL','Bean Point Beach, Anna Maria, FL','Tampa Riverwalk, Tampa, FL']},
+{t:'Manatees, mermaids, then Miami Beach',s:'The springs at their best: manatee season has started. Then one last Gulf beach, the long drive east, and South Beach lit up at night.',mi:'~440 mi',dr:'~8 h',sl:'Miami Beach',
+it:[['6:45 am','Leave Tampa','Veterans Expressway and Suncoast Parkway north (tolls). About 1.5 hours.'],
+['8:30 am','Three Sisters Springs, Crystal River','Tickets at the Three Sisters Springs Center (917 Three Sisters Springs Trail), then the trolley to the boardwalk. Cold mornings bring the most manatees.'],
+['10:15 am','Drive to Weeki Wachee','35 minutes south on US-19.'],
+['10:50 am','Weeki Wachee Springs State Park','Late-morning mermaid show (first come, doors open 30 minutes before), then the river boat cruise. Check the day\'s showtimes at the gate.'],
+['12:45 pm','Lunch, drive to Clearwater','About 1 hour.'],
+['1:45 pm','Clearwater Beach and Pier 60','Last Gulf beach. Feet in the water, photos.'],
+['2:45 pm','Drive to Miami Beach','I-275, I-75 south, Alligator Alley, then I-75 and SR-836 into Miami and over the MacArthur Causeway. About 5 hours, more on the Sunday after Thanksgiving. Swap drivers every 90 minutes.'],
+['8:00 pm','Miami Beach hotel','Stay near Ocean Drive or Collins Ave in South Beach so the morning is walkable. Park once; hotel or garage parking is pricey.'],
+['8:30 pm','Ocean Drive at night','Dinner, then walk the Art Deco hotels when the neon is on. This is the best time to see them.']],
+alt:'Easier day: skip Clearwater and leave Weeki Wachee by 12:30, which puts you in Miami Beach around 6:30 pm with time for a sunset-ish beach walk and a relaxed dinner.',
+gm:['Tampa, FL','Three Sisters Springs Center, Crystal River, FL','Weeki Wachee Springs State Park, FL','Pier 60, Clearwater Beach, FL','Ocean Drive, Miami Beach, FL']},
+{t:'A Miami morning, then fly home',s:'South Beach at sunrise, Cuban breakfast in Little Havana, Wynwood murals, then up I-95 to the airport.',mi:'~45 mi',dr:'~1 h 30 m',sl:'Home',
+it:[['6:30 am','South Pointe Park','Sunrise over the Atlantic around 6:50 am, from the pier at the tip of Miami Beach.'],
+['7:15 am','South Beach and Ocean Drive','Walk north along Lummus Park beach (the colorful lifeguard towers) and the Art Deco hotels in daylight. Check out on the way back.'],
+['8:15 am','Drive to Little Havana','About 20 minutes over the causeway.'],
+['8:35 am','Breakfast at Versailles','Opens 8 am on Mondays. Order cafecito or a cortadito at the walk-up window, then Cuban toast and pastelitos inside.'],
+['9:30 am','Calle Ocho walk','Domino Park, cigar rollers, murals and the Walk of Fame stars along SW 8th Street. Park once and walk.'],
+['10:05 am','Wynwood murals','Walk the free street murals on the blocks around NW 2nd Ave. The ticketed Wynwood Walls opens at 10:30 am; skip it unless you are running early.'],
+['10:45 am','I-95 north to FLL','About 35 to 45 minutes on a Monday morning. Refuel near the airport.'],
+['11:30 am','Return the car','Follow Rental Car Return signs at FLL, then the shuttle to your terminal.'],
+['12:00 pm','Check in and security','Frontier closes bag drop well before departure. Be at the counter by noon.'],
+['1:56 pm','Frontier F9 1655 to Columbus','Lands 4:40 pm.']],
+alt:'Prefer gardens to graffiti? Swap Wynwood for Vizcaya (opens 9:30 am, closed Tuesdays only) and do 9:30 to 10:30 there after an earlier Versailles breakfast. If I-95 looks red on Google Maps, cut Wynwood and leave Little Havana by 10:15.',
+gm:['South Pointe Park, Miami Beach, FL','Ocean Drive, Miami Beach, FL','Versailles Restaurant, Miami, FL','Domino Park, Calle Ocho, Miami, FL','Wynwood Walls, Miami, FL','Fort Lauderdale-Hollywood International Airport']}
+];
+function dayInfo(n){const d=DAYS[n-1];return`<span class="tag" style="background:${DC[n]}">Day ${n} · ${DN[n]}</span><h3 style="margin-top:10px">${d.t}</h3><p style="margin:6px 0 0">${d.s}</p><dl><dt>Distance</dt><dd>${d.mi}</dd><dt>Driving</dt><dd>${d.dr}</dd><dt>Sleep</dt><dd>${d.sl}</dd></dl><p style="margin:12px 0 0"><a href="#day${n}">Full timeline</a> · <a href="${gmLink(d.gm)}">Directions in Google Maps</a></p>`}
+const gmLink=a=>'https://www.google.com/maps/dir/'+a.map(encodeURIComponent).join('/');
+// controls
+const chips=[['All days',0],...[1,2,3,4,5].map(n=>['Day '+n,n]),['Key West close-up','kw'],['Miami close-up','mia']];
+const ch=document.getElementById('chips');
+ch.innerHTML=chips.map(c=>`<button class="chip" data-c="${c[1]}" aria-pressed="${c[1]===0}">${typeof c[1]==='number'&&c[1]?`<i style="background:${DC[c[1]]}"></i>`:''}${c[0]}</button>`).join('');
+ch.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const v=b.dataset.c;
+if(VIEWS[v]){st.view=VIEWS[v];st.day=0}else{st.view=null;st.day=+v}
+st.sel=null;ch.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));st.anim=!VIEWS[v];info();draw()});
+document.getElementById('play').addEventListener('click',()=>{st.anim=true;draw()});
+document.getElementById('all').addEventListener('change',e=>{st.all=e.target.checked;draw()});
+svg.addEventListener('click',e=>{const t=e.target.closest('[data-id]');st.sel=t?t.dataset.id:null;info();draw()});
+document.getElementById('legend').innerHTML=[1,2,3,4,5].map(n=>`<div><i style="background:${DC[n]}"></i>Day ${n} · ${DN[n]}: ${DAYS[n-1].t}</div>`).join('')+`<div><i style="background:${DC[0]};height:10px;width:10px;border-radius:50%"></i>Worth knowing, not in plan</div>`;
+const ro=new ResizeObserver(draw);ro.observe(svg);
+document.getElementById('nstop').firstChild.textContent=P.filter(p=>p[5]).length;
+info();
+// places by region
+document.getElementById('regions').innerHTML=Object.keys(REG).map(r=>{const rows=P.filter(p=>p[2]===r);const n=rows.filter(p=>p[5]).length;
+return`<div class="region"><h3>${REG[r]} <span class="small">· ${rows.length} places, ${n} in plan</span></h3><table class="stack"><thead><tr><th>Place</th><th>Why go</th><th>Time</th><th>Cost</th><th>Plan</th></tr></thead><tbody>${rows.map(p=>`<tr><td><button class="pl" data-go="${p[0]}">${p[1]}</button>${p[9]?' <span class="badge" style="background:var(--sea)">Added</span>':''}</td><td>${p[8]}</td><td class="n">${p[6]}</td><td>${p[7]}</td><td>${p[5]?`<span class="badge" style="background:${DC[p[5]]}">Day ${p[5]}</span>`:'<span class="badge no">Not in plan</span>'}</td></tr>`).join('')}</tbody></table></div>`}).join('');
+document.getElementById('regions').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;const p=byId(b.dataset.go);
+st.sel=p[0];st.all=true;document.getElementById('all').checked=true;
+const vk=(p[2]==='keys'&&p[4]<-81.78&&p[4]>-81.82)?'kw':(p[2]==='miami'&&p[3]>25.66&&p[3]<25.83)?'mia':null;
+st.view=vk?VIEWS[vk]:null;st.day=0;
+ch.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.c===(vk||'0')));
+info();draw();document.getElementById('map').scrollIntoView()});
+// days
+document.getElementById('days').innerHTML=DAYS.map((d,i)=>{const n=i+1;return`<article class="day" id="day${n}"><div class="dh"><div class="dn" style="color:${DC[n]}">${n}</div><h3>${DN[n]}: ${d.t}</h3><p>${d.s}</p></div>
+<div class="dm"><span>Distance <b>${d.mi}</b></span><span>Driving <b>${d.dr}</b></span><span>Sleep <b>${d.sl}</b></span></div>
+<ol class="tl">${d.it.map(x=>`<li><time>${x[0]}</time><div><strong>${x[1]}</strong>${x[2]?`<span>${x[2]}</span>`:''}</div></li>`).join('')}</ol>
+<div class="df"><div class="alt"><strong>Plan B:</strong> ${d.alt}</div><div><a class="btn" style="display:inline-flex;align-items:center;text-decoration:none" href="${gmLink(d.gm)}">Open Day ${n} route in Google Maps</a></div></div></article>`}).join('');
+// budget
+const B=[['Gas','~1,110 mi at ~20 mpg, $3.62/gal',200,40],['Tolls + Enterprise TollPass','Turnpike, Alligator Alley, Skyway, Suncoast, SR-836. TollPass is $4.95 per day used, $34.65 max',75,15],['Hotels, 4 nights, 2 rooms','Key West on Thanksgiving is the big one (median ~$340/room last year); Miami Beach is the next priciest','1,700 to 2,400','340 to 480'],['Miami Beach parking','Overnight hotel or garage parking, rough guess; check your hotel','40 to 60','8 to 12'],['Everglades vehicle pass','$35 per car, 7 days, all entrances',35,7],['Shark Valley tram','$34 per adult',170,34],['Other entries','Hemingway, Fort Zach, Bahia Honda, Three Sisters, Weeki Wachee','200 to 250','40 to 50'],['Food','About $50 to $70 per person per day','1,000 to 1,400','200 to 280'],['Total, before car and flights','','~3,420 to 4,590','~685 to 920']];
+document.getElementById('bud').innerHTML=B.map((r,i)=>`<tr${i===B.length-1?' style="font-weight:700"':''}><td>${r[0]}</td><td>${r[1]}</td><td class="r">${typeof r[2]==='number'?'$'+r[2]:'$'+r[2]}</td><td class="r">${typeof r[3]==='number'?'$'+r[3]:'$'+r[3]}</td></tr>`).join('');
+// checklist
+const K=['Key West hotel for Thu Nov 26 (2 rooms or a suite for 5)','Thanksgiving dinner reservation in Key West, around 7:30 pm','Hotels: Florida City (Fri), Tampa (Sat), South Beach / Miami Beach with parking (Sun)','Enterprise: confirm a minivan or 7-seat SUV, TollPass, and add all drivers','Shark Valley tram tour, Sat Nov 28 at 9:30 am (sharkvalleytramtours.com)','Everglades vehicle pass online, or buy at the gate (card only)','Optional: Crystal River manatee swim or clear kayak tour, Sun Nov 29 early','Frontier: check bag allowance for all 5 and check in online the day before','Download offline Google Maps for South Florida (weak signal in the Everglades)'];
+let saved={};try{saved=JSON.parse(localStorage.getItem('fl-chk')||'{}')}catch(e){}
+const ck=document.getElementById('chk');
+ck.innerHTML=K.map((k,i)=>`<li><label><input type="checkbox" data-k="${i}" ${saved[i]?'checked':''}> <span>${k}</span></label></li>`).join('');
+ck.addEventListener('change',e=>{saved[e.target.dataset.k]=e.target.checked;try{localStorage.setItem('fl-chk',JSON.stringify(saved))}catch(x){}});
+// alternatives
+const A=[['Save on night 1','Stay in Marathon or Big Pine Key instead of Key West. Rooms are cheaper, but Day 2 starts with a 1-hour drive to Key West.'],['Fewer miles on Day 4','Skip Crystal River and do only Weeki Wachee and Clearwater. Saves about 1.5 hours of driving, but you lose the best manatee viewing.'],['East-side springs','Return via Blue Spring State Park in Orange City (manatee refuge) and Florida\'s Turnpike instead of Alligator Alley. Similar total time.'],['More beach, less Tampa','Sleep in Sarasota on Day 3 instead of Tampa, add a Siesta Key sunrise on Day 4, then head north to the springs.'],['Rainy day','Ringling Museum (Sarasota), Dalí Museum (St. Pete), Turtle Hospital (Marathon) or the Hemingway Home are all good under cover.'],['More Miami, less Gulf','Skip Clearwater on Day 4 to reach Miami Beach by about 6:30 pm. That buys a relaxed evening on Ocean Drive without changing anything else.'],['Miami swaps','Vizcaya instead of Wynwood if the group likes gardens and old houses. Key Biscayne instead of Little Havana if you want one more beach. Both need the morning to start by 7:30.'],['Fort Lauderdale instead','If Miami Beach hotels are too pricey for Sunday, use the first version\'s plan: sleep at Fort Lauderdale Beach and do Las Olas Monday morning. Miami then drops to a drive-by.'],['Easy add-ons on the route','Big Cypress Bend boardwalk (Day 3, on US-41), Sombrero Beach or Curry Hammock (Day 1 or 2, right off US-1), Butterfly Conservatory (Day 2, next to the Southernmost Point).'],['What does not fit','Dry Tortugas, Kennedy Space Center, Orlando parks, Busch Gardens and Corkscrew Swamp each need a full or half day. Farther still: St. Augustine (oldest city in the US) and the Panhandle beaches like Destin and Pensacola are 5 to 9 hours north. Save them for another trip.']];
+document.getElementById('altc').innerHTML=A.map(a=>`<div class="card"><h3>${a[0]}</h3><p>${a[1]}</p></div>`).join('');
+// tips
+const T=['<b>Thanksgiving Day:</b> large grocery chains usually close. Eat before or during the flight and carry snacks for the drive. Gas stations and pharmacies stay open.','<b>Car:</b> 5 adults plus bags needs a minivan. Return it full, and keep receipts for tolls.','<b>Tolls:</b> the Overseas Highway to Key West is toll-free. The Turnpike, Alligator Alley, Skyway and Suncoast Parkway are cashless, so TollPass is the easy option.','<b>Keys traffic:</b> US-1 is mostly two lanes with few passing spots. One crash can add hours, so keep buffer time.','<b>Everglades:</b> anyone 16+ who does not live in the US pays an extra $100 entry fee. Stay well back from alligators and never feed them.','<b>Shark Valley:</b> expect long waits from 10 am to 3 pm and arrive well before your tram time.','<b>Manatees:</b> season runs Nov 15 to Mar 31. Boardwalk viewing is the gentle option; never touch or chase them.','<b>Bean Point:</b> no lot, residential streets, and parking tickets are common. Strong current, so wade, do not swim.','<b>Weeki Wachee:</b> mermaid show seats are first come and the theater door closes when full. Go in 30 minutes early.','<b>Sun:</b> late-November sun is still strong. Reef-safe sunscreen, hats and water for every stop.','<b>Drivers:</b> rotate every 90 minutes on Days 3 and 4. Those are the long ones.','<b>Return day:</b> have the car back by 11:30 am at the latest. FLL holiday-weekend lines can be long, and I-95 from Miami can slow down without warning.','<b>Miami parking:</b> South Beach street parking is metered and towing is strict. Use your hotel or a city garage, and pay at the meter or through the city parking app.','<b>Miami safety:</b> keep bags out of sight in the van at every stop, especially in Wynwood and on Ocean Drive.'];
+document.getElementById('tipl').innerHTML=T.map(t=>`<li>${t}</li>`).join('');
+}
+</script>
+</body>
+</html>
